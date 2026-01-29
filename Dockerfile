@@ -23,6 +23,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Stage 2: Final image
 FROM python:3.12-slim-bookworm
 
+LABEL version="v1.0.1"
+LABEL description="Django Fullstack App with DevSecOps and Monitoring"
+LABEL changes="Integrated django-prometheus, added business metrics, fixed gunicorn/uvicorn dependency, and added automatic migrations on startup"
+
 # Create a non-privileged user to run the app
 RUN addgroup --system django && adduser --system --group django
 
