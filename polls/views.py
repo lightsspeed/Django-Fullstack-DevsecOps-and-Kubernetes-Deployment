@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.db.models import Count
 from .models import Poll, Choice, Vote, Category
 from .forms import PollForm, ChoiceFormSet
-from django_prometheus.metrics import Counter
+from prometheus_client import Counter
 
 votes_cast_total = Counter('votes_cast_total', 'Total number of votes cast')
 
