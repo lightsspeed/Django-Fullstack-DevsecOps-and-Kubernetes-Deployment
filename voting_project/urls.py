@@ -20,6 +20,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from django.urls import include
+from django.http import HttpResponse
+
+def health_check(request):
+    return HttpResponse("OK")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,6 +36,9 @@ urlpatterns = [
     
     # Prometheus metrics
     path('', include('django_prometheus.urls')),
+    
+    # Health check
+    path('health/', health_check, name='health_check'),
 ]
 
 if settings.DEBUG:
