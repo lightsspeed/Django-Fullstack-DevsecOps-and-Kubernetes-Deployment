@@ -23,9 +23,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Stage 2: Final image
 FROM python:3.12-slim-bookworm
 
-LABEL version="v1.0.2"
+LABEL version="v1.0.3"
 LABEL description="Django Fullstack App with DevSecOps and Monitoring"
-LABEL changes="Added /health/ endpoint and fixed ALLOWED_HOSTS for K8s accessibility"
+LABEL changes="Added Django management command for simulating user activity and generating test data"
 
 # Create a non-privileged user to run the app
 RUN addgroup --system django && adduser --system --group django
