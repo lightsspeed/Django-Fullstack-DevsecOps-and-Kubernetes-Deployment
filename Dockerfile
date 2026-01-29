@@ -62,4 +62,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health/ || exit 1
 
 # Default command (will be overridden by K8s for different processes like Celery)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "voting_project.wsgi:application"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 voting_project.wsgi:application"]
