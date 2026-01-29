@@ -38,10 +38,22 @@ spec:
         - name: datasource-volume
           mountPath: /etc/grafana/provisioning/datasources/prometheus.yaml
           subPath: prometheus.yaml
+        - name: dashboard-provider-volume
+          mountPath: /etc/grafana/provisioning/dashboards/dashboard-provider.yaml
+          subPath: dashboard-provider.yaml
+        - name: dashboard-volume
+          mountPath: /var/lib/grafana/dashboards/django-dashboard.json
+          subPath: django-dashboard.json
       volumes:
       - name: datasource-volume
         configMap:
           name: grafana-datasources
+      - name: dashboard-provider-volume
+        configMap:
+          name: grafana-dashboard-provider
+      - name: dashboard-volume
+        configMap:
+          name: grafana-dashboard-config
 ---
 apiVersion: v1
 kind: Service
