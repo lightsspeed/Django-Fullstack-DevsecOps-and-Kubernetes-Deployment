@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Voting App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">Create Account</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Register</button>
+                    </div>
+                </form>
+                <div class="mt-3 text-center">
+                    <p>Already have an account? <a href="{% url 'users:login' %}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add bootstrap classes to form inputs
+    document.querySelectorAll('input').forEach(input => {
+        if (input.type !== 'checkbox') {
+            input.classList.add('form-control');
+        } else {
+            input.classList.add('form-check-input');
+        }
+    });
+</script>
+{% endblock %}

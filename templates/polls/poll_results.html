@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Results: {{ poll.title }} - Voting App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="mb-4">Results: {{ poll.title }}</h2>
+
+                {% for choice in choices %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>{{ choice.choice_text }}</span>
+                        <span class="fw-bold">{{ choice.vote_count }} ({{ choice.percentage|floatformat:1 }}%)</span>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                            style="width: {{ choice.percentage }}%;" aria-valuenow="{{ choice.percentage }}"
+                            aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-secondary">Total Votes: {{ total_votes }}</span>
+                    <div>
+                        <a href="{% url 'polls:poll_detail' poll.slug %}" class="btn btn-outline-primary">Back to
+                            Poll</a>
+                        <a href="{% url 'polls:poll_list' %}" class="btn btn-primary">Browse Other Polls</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

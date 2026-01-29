@@ -1,0 +1,16 @@
+django>=5.0,<6.0
+django-rest-framework
+django-extensions
+django-cors-headers
+django-channels[daphne]
+channels-redis
+celery
+redis
+psycopg2-binary
+django-environ
+whitenoise
+pillow
+argon2-cffi
+drf-spectacular
+pytest-django
+django-prometheus

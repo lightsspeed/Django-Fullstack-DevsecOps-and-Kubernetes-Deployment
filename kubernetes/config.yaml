@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-config
+data:
+  DEBUG: "False"
+  ALLOWED_HOSTS: "*"
+  DJANGO_SETTINGS_MODULE: "voting_project.settings"
+  CELERY_BROKER_URL: "redis://redis-service:6379/0"
+  REDIS_URL: "redis://redis-service:6379/1"
+  DB_ENGINE: "django.db.backends.postgresql"
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DATABASE_URL: "postgres://django:password@postgres-service:5432/django_db"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: django-secrets
+type: Opaque
+stringData:
+  SECRET_KEY: "change-me-to-something-secure"
+  DB_NAME: "django_db"
+  DB_USER: "django"
+  DB_PASSWORD: "password"

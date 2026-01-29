@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Poll - Voting App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="mb-4">Create a New Poll</h3>
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    {% if choice_formset.non_form_errors %}
+                    <div class="alert alert-danger">
+                        {{ choice_formset.non_form_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-secondary mb-3">Poll Details</h5>
+                            {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                <div class="form-text text-muted small">{{ field.help_text }}</div>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="card mb-4 border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title d-flex justify-content-between align-items-center">
+                                Options
+                                <small class="text-muted" style="font-size: 0.8rem;">Minimum 2, Maximum 10</small>
+                            </h5>
+                            <hr>
+                            {{ choice_formset.management_form }}
+                            <div id="choice-form-list">
+                                {% for choice_form in choice_formset %}
+                                <div class="choice-form bg-white border rounded p-3 mb-3 shadow-sm">
+                                    {{ choice_form.id }}
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light text-muted">#</span>
+                                                {{ choice_form.choice_text }}
+                                            </div>
+                                            {% for error in choice_form.choice_text.errors %}
+                                            <div class="text-danger small mt-1">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-auto">
+                                            {% if choice_formset.can_delete %}
+                                            <div class="form-check">
+                                                {{ choice_form.DELETE }}
+                                                <label class="form-check-label text-danger small">Delete</label>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" id="add-choice" class="btn btn-outline-success btn-sm w-100">
+                                <i class="bi bi-plus-circle"></i> Add Another Option
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3 border-top">
+                        <a href="{% url 'polls:poll_list' %}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-5">Create Poll</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="empty-form-template">
+    <div class="choice-form bg-light border rounded p-3 mb-3 shadow-sm animate-fade-in">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text bg-info text-white">New</span>
+                    {{ choice_formset.empty_form.choice_text }}
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-danger btn-sm remove-form">
+                    Remove
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+    .choice-form {
+        transition: all 0.3s ease;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addBtn = document.getElementById('add-choice');
+        const formList = document.getElementById('choice-form-list');
+        const totalForms = document.getElementById('id_choices-TOTAL_FORMS');
+        const emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;
+
+        // Apply classes to existing rows
+        function applyInputClasses(parent) {
+            parent.querySelectorAll('input').forEach(input => {
+                if (input.type !== 'checkbox' && input.type !== 'hidden') {
+                    input.classList.add('form-control');
+                } else if (input.type === 'checkbox') {
+                    input.classList.add('form-check-input');
+                }
+            });
+            parent.querySelectorAll('textarea, select').forEach(el => {
+                el.classList.add('form-control');
+            });
+        }
+
+        applyInputClasses(document);
+
+        addBtn.addEventListener('click', function () {
+            const currentFormCount = parseInt(totalForms.value);
+            if (currentFormCount >= 10) {
+                alert("Maximum 10 choices allowed.");
+                return;
+            }
+
+            const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, currentFormCount);
+            const newFormNode = document.createElement('div');
+            newFormNode.innerHTML = newFormHtml;
+
+            formList.appendChild(newFormNode.firstElementChild);
+            totalForms.value = currentFormCount + 1;
+
+            applyInputClasses(formList.lastElementChild);
+        });
+
+        formList.addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-form')) {
+                e.target.closest('.choice-form').remove();
+                // We keep totalForms count as is to avoid index conflicts 
+                // Django handles the submission based on the management form
+                // High-fidelity fix would involve re-indexing but for create it's fine
+            }
+        });
+    });
+</script>
+{% endblock %}

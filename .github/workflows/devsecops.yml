@@ -1,0 +1,81 @@
+name: DevSecOps CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install black flake8
+      - name: Format with Black
+        run: black --check .
+      - name: Lint with Flake8
+        run: flake8 . --max-line-length=88
+
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bandit Security Scan
+        run: |
+          pip install bandit
+          bandit -r . -f json -o bandit-results.json || true
+      - name: Static Analysis with SonarCloud (Optional)
+        # Placeholder for SonarCloud if token is available
+        run: echo "SonarCloud scan would run here"
+
+  sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependency Scan (Safety)
+        run: |
+          pip install safety
+          safety check -r requirements.txt || true
+      - name: Trivy FS Scan (Vulnerability Scan)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          security-checks: 'vuln,config'
+          format: 'table'
+          exit-code: '0'
+
+  build:
+    needs: [lint, sast, sca]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker Image
+        run: docker build -t django-app:${{ github.sha }} .
+      - name: Container Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'django-app:${{ github.sha }}'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1' # Fail build on High/Critical vulnerabilities
+
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Azure Login / AWS Login / GCP Login
+  #       run: echo "Cloud login steps"
+  #     - name: Deploy to K8s
+  #       run: |
+  #         kubectl apply -f kubernetes/
+  #         kubectl set image deployment/django-app django-app=django-app:${{ github.sha }}
