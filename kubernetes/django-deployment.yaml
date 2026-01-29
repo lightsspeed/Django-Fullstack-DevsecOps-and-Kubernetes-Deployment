@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: django-app
-        image: lightsspeed/django-app:v1.0.5
+        image: lightsspeed/django-app:v1.0.6
         ports:
         - containerPort: 8000
         envFrom:

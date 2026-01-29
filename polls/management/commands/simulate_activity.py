@@ -69,13 +69,13 @@ class Command(BaseCommand):
         ]
         
         polls = []
-        import time
-        timestamp = int(time.time())
+        # Use shorter random suffix to avoid slug length issues
+        run_id = random.randint(1000, 9999)
         
         for i, data in enumerate(poll_data):
             creator = users[i % len(users)]
-            # Add timestamp to make polls unique each run
-            unique_title = f"{data['title']} (Run {timestamp})"
+            # Add short random ID to make polls unique each run
+            unique_title = f"{data['title']} #{run_id}"
             poll = Poll.objects.create(
                 title=unique_title,
                 description=data['description'],
