@@ -4,6 +4,9 @@ from polls.models import Poll, Choice, Vote, Category
 from django.utils import timezone
 import random
 
+# Import the Prometheus counter
+from polls.views import votes_cast_total
+
 User = get_user_model()
 
 class Command(BaseCommand):
@@ -111,6 +114,8 @@ class Command(BaseCommand):
                 user=user,
                 ip_address='127.0.0.1'
             )
+            # Increment the Prometheus counter just like the real VoteView does
+            votes_cast_total.inc()
             vote_count += 1
         
         self.stdout.write(self.style.SUCCESS(f'✓ Created {len(users)} users'))

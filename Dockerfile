@@ -23,9 +23,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Stage 2: Final image
 FROM python:3.12-slim-bookworm
 
-LABEL version="v1.0.3"
+LABEL version="v1.0.4"
 LABEL description="Django Fullstack App with DevSecOps and Monitoring"
-LABEL changes="Added Django management command for simulating user activity and generating test data"
+LABEL changes="Fixed simulate_activity to increment Prometheus counter for automated metrics"
 
 # Create a non-privileged user to run the app
 RUN addgroup --system django && adduser --system --group django
