@@ -69,24 +69,26 @@ class Command(BaseCommand):
         ]
         
         polls = []
+        import time
+        timestamp = int(time.time())
+        
         for i, data in enumerate(poll_data):
             creator = users[i % len(users)]
-            poll, created = Poll.objects.get_or_create(
-                title=data['title'],
-                defaults={
-                    'description': data['description'],
-                    'creator': creator,
-                    'category': random.choice(categories),
-                    'is_public': True,
-                    'allow_multiple_votes': False
-                }
+            # Add timestamp to make polls unique each run
+            unique_title = f"{data['title']} (Run {timestamp})"
+            poll = Poll.objects.create(
+                title=unique_title,
+                description=data['description'],
+                creator=creator,
+                category=random.choice(categories),
+                is_public=True,
+                allow_multiple_votes=False
             )
             
-            if created:
-                # Create choices
-                for choice_text in data['choices']:
-                    Choice.objects.create(poll=poll, choice_text=choice_text)
-                self.stdout.write(f'Created poll: {poll.title}')
+            # Create choices
+            for choice_text in data['choices']:
+                Choice.objects.create(poll=poll, choice_text=choice_text)
+            self.stdout.write(f'Created poll: {poll.title}')
             polls.append(poll)
         
         # Simulate voting
