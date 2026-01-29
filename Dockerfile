@@ -28,6 +28,11 @@ RUN addgroup --system django && adduser --system --group django
 
 WORKDIR /app
 
+# Set default environment variables for local testing
+ENV DEBUG=True
+ENV SECRET_KEY=django-insecure-default-key-change-me
+ENV DATABASE_URL=sqlite:///db.sqlite3
+
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
@@ -54,7 +59,7 @@ EXPOSE 8000
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8000/health/ || exit 1
+    CMD curl -f http://localhost:8000/health/ || exit 1
 
 # Default command (will be overridden by K8s for different processes like Celery)
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "voting_project.wsgi:application"]
