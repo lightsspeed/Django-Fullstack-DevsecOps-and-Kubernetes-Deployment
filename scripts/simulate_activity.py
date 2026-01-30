@@ -114,7 +114,7 @@ class MockUser:
             response = self.session.post(vote_url, data=data, timeout=10)
             if response.status_code == 200:
                 return True
-        except Exception as e:
+        except Exception:
             # print(f"Voting error on {poll_url}: {e}")
             pass
         return False
@@ -177,7 +177,6 @@ def run_enhanced_simulation():
     user_count = 0
     while True:
         try:
-            ts = int(time.time())
             username = f"mass_user_{user_count}_{get_random_string(4)}"
             user = MockUser(username, "MassPass123!", f"{username}@sim.local")
 
@@ -189,7 +188,8 @@ def run_enhanced_simulation():
                         success_votes += 1
                     time.sleep(0.1)  # Small delay to not overwhelm
                 print(
-                    f"User {username} finished. Success votes: {success_votes}/{len(poll_urls)}"
+                    f"User {username} finished. Success: {success_votes}/"
+                    f"{len(poll_urls)}"
                 )
                 user_count += 1
 

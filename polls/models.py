@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-from django.utils.text import slugify
 from django.utils import timezone
 from voting_project.utils import generate_unique_slug
 

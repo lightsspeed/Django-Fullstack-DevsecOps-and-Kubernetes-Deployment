@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from polls.models import Poll, Choice, Vote, Category
-from django.utils import timezone
 import random
 
 # Import the Prometheus counter
@@ -30,7 +29,7 @@ class Command(BaseCommand):
                 username=username,
                 defaults={
                     "email": f"{username}@example.com",
-                    "first_name": f"Test",
+                    "first_name": "Test",
                     "last_name": f"User{i}",
                 },
             )

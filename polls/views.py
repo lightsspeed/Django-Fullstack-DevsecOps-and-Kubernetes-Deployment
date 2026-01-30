@@ -1,10 +1,11 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import Count
-from .models import Poll, Choice, Vote, Category
+from django.utils import timezone
+from .models import Poll, Choice, Vote
 from .forms import PollForm, ChoiceFormSet
 from prometheus_client import Counter
 
@@ -61,7 +62,8 @@ class PollCreateView(LoginRequiredMixin, CreateView):
             if not choice_formset.is_valid():
                 messages.error(
                     self.request,
-                    "There were errors in the poll choices. Ensure you have at least 2 choices.",
+                    "There were errors in the poll choices. "
+                    "Ensure you have at least 2 choices.",
                 )
             return self.render_to_response(
                 self.get_context_data(form=form, choice_formset=choice_formset)
