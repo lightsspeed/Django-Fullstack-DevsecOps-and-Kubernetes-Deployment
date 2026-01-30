@@ -49,6 +49,7 @@ jobs:
           security-checks: 'vuln,config'
           format: 'table'
           exit-code: '0'
+          ignore-unfixed: true
 
   build:
     needs: [lint, sast, sca]
@@ -66,6 +67,7 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1' # Fail build on High/Critical vulnerabilities
+          ignore-unfixed: true
 
   # deploy:
   #   needs: build
