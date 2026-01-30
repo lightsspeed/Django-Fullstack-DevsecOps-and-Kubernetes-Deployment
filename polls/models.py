@@ -3,6 +3,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from voting_project.utils import generate_unique_slug
+from django_prometheus.models import ExportModelOperationsMixin
 
 
 class Category(models.Model):
@@ -22,7 +23,7 @@ class Category(models.Model):
         return self.name
 
 
-class Poll(models.Model):
+class Poll(ExportModelOperationsMixin("poll"), models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     creator = models.ForeignKey(
@@ -66,7 +67,7 @@ class Choice(models.Model):
         return f"{self.poll.title} - {self.choice_text}"
 
 
-class Vote(models.Model):
+class Vote(ExportModelOperationsMixin("vote"), models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="votes")
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE, related_name="votes")
     user = models.ForeignKey(

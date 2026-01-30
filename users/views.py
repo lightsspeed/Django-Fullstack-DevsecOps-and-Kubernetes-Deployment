@@ -5,6 +5,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from .forms import CustomUserCreationForm, UserProfileForm
 from .models import User
+from prometheus_client import Counter
+
+users_registered_total = Counter("users_registered_total", "Total number of users registered")
 
 
 class RegisterView(CreateView):
@@ -14,6 +17,7 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        users_registered_total.inc()
         messages.success(self.request, "Account created! Please login.")
         return response
 
