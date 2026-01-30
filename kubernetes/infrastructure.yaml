@@ -32,6 +32,13 @@ spec:
             secretKeyRef:
               name: django-secrets
               key: DB_PASSWORD
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
