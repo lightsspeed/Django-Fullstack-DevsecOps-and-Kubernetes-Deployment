@@ -133,7 +133,7 @@ data:
           "id": 4,
           "targets": [
             {
-              "expr": "sum(rate(django_http_requests_latency_seconds_sum[1m])) / sum(rate(django_http_requests_latency_seconds_count[1m]))",
+              "expr": "sum(rate(django_http_requests_latency_including_middlewares_seconds_sum[1m])) / sum(rate(django_http_requests_latency_including_middlewares_seconds_count[1m]))",
               "refId": "A"
             }
           ],
@@ -146,7 +146,7 @@ data:
           "id": 5,
           "targets": [
             {
-              "expr": "sum(rate(django_http_responses_total_by_status_total{status=~\"5..\"}[1m]))",
+              "expr": "(sum(rate(django_http_responses_total_by_status_total{status=~\"5..\"}[1m])) or vector(0))",
               "refId": "A"
             }
           ],
@@ -159,7 +159,7 @@ data:
           "id": 6,
           "targets": [
             {
-              "expr": "django_db_get_new_connection_total",
+              "expr": "sum(pg_stat_activity_count{datname=\"django_db\"})",
               "refId": "A"
             }
           ],

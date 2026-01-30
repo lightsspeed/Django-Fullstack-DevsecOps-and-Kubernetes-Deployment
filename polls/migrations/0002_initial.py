@@ -10,38 +10,60 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('polls', '0001_initial'),
+        ("polls", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='poll',
-            name='creator',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='polls', to=settings.AUTH_USER_MODEL),
+            model_name="poll",
+            name="creator",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="polls",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='choice',
-            name='poll',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='choices', to='polls.poll'),
+            model_name="choice",
+            name="poll",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="choices",
+                to="polls.poll",
+            ),
         ),
         migrations.AddField(
-            model_name='vote',
-            name='choice',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='votes', to='polls.choice'),
+            model_name="vote",
+            name="choice",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="votes",
+                to="polls.choice",
+            ),
         ),
         migrations.AddField(
-            model_name='vote',
-            name='poll',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='votes', to='polls.poll'),
+            model_name="vote",
+            name="poll",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="votes",
+                to="polls.poll",
+            ),
         ),
         migrations.AddField(
-            model_name='vote',
-            name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='votes', to=settings.AUTH_USER_MODEL),
+            model_name="vote",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="votes",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='vote',
-            unique_together={('poll', 'user')},
+            name="vote",
+            unique_together={("poll", "user")},
         ),
     ]

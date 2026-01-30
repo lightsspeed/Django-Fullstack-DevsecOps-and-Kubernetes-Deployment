@@ -5,6 +5,7 @@ from django.utils.text import slugify
 from django.utils import timezone
 from voting_project.utils import generate_unique_slug
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
@@ -21,10 +22,13 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Poll(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='polls')
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="polls"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField(default=timezone.now)
@@ -33,7 +37,9 @@ class Poll(models.Model):
     is_archived = models.BooleanField(default=False)
     is_public = models.BooleanField(default=True)
     allow_multiple_votes = models.BooleanField(default=False)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='polls')
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="polls"
+    )
     slug = models.SlugField(unique=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -42,33 +48,44 @@ class Poll(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('polls:poll_detail', kwargs={'slug': self.slug})
+        return reverse("polls:poll_detail", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.title
 
+
 class Choice(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='choices')
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="choices")
     choice_text = models.CharField(max_length=255)
     order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['order']
+        ordering = ["order"]
 
     def __str__(self):
         return f"{self.poll.title} - {self.choice_text}"
 
+
 class Vote(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='votes')
-    choice = models.ForeignKey(Choice, on_delete=models.CASCADE, related_name='votes')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='votes')
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="votes")
+    choice = models.ForeignKey(Choice, on_delete=models.CASCADE, related_name="votes")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="votes",
+    )
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField(null=True, blank=True)
     voted_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('poll', 'user') # Basic prevention of duplicate voting by user
+        unique_together = (
+            "poll",
+            "user",
+        )  # Basic prevention of duplicate voting by user
 
     def __str__(self):
         return f"{self.user} voted for {self.choice.choice_text}"

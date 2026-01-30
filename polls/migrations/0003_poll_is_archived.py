@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('polls', '0002_initial'),
+        ("polls", "0002_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='poll',
-            name='is_archived',
+            model_name="poll",
+            name="is_archived",
             field=models.BooleanField(default=False),
         ),
     ]

@@ -6,6 +6,7 @@ import string
 
 BASE_URL = "http://127.0.0.1:63371"
 
+
 class MockUser:
     def __init__(self, username, password, email):
         self.username = username
@@ -17,10 +18,10 @@ class MockUser:
     def get_csrf(self, url):
         try:
             response = self.session.get(url, timeout=10)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            token = soup.find('input', {'name': 'csrfmiddlewaretoken'})
+            soup = BeautifulSoup(response.text, "html.parser")
+            token = soup.find("input", {"name": "csrfmiddlewaretoken"})
             if token:
-                self.csrf_token = token['value']
+                self.csrf_token = token["value"]
             return self.csrf_token
         except Exception as e:
             print(f"Error getting CSRF: {e}")
@@ -31,11 +32,11 @@ class MockUser:
         if not self.get_csrf(url):
             return False
         data = {
-            'csrfmiddlewaretoken': self.csrf_token,
-            'username': self.username,
-            'email': self.email,
-            'password1': self.password,
-            'password2': self.password
+            "csrfmiddlewaretoken": self.csrf_token,
+            "username": self.username,
+            "email": self.email,
+            "password1": self.password,
+            "password2": self.password,
         }
         try:
             response = self.session.post(url, data=data, timeout=10)
@@ -51,13 +52,16 @@ class MockUser:
         if not self.get_csrf(url):
             return False
         data = {
-            'csrfmiddlewaretoken': self.csrf_token,
-            'username': self.username,
-            'password': self.password
+            "csrfmiddlewaretoken": self.csrf_token,
+            "username": self.username,
+            "password": self.password,
         }
         try:
             response = self.session.post(url, data=data, timeout=10)
-            if response.status_code == 200 and ("polls" in response.url or response.url.rstrip('/') == BASE_URL.rstrip('/')):
+            if response.status_code == 200 and (
+                "polls" in response.url
+                or response.url.rstrip("/") == BASE_URL.rstrip("/")
+            ):
                 print(f"User {self.username} logged in.")
                 return True
         except Exception as e:
@@ -69,18 +73,18 @@ class MockUser:
         if not self.get_csrf(url):
             return None
         data = {
-            'csrfmiddlewaretoken': self.csrf_token,
-            'title': title,
-            'description': f"Large scale poll: {title}",
-            'is_public': 'on',
-            'start_date': time.strftime('%Y-%m-%dT%H:%M'),
-            'choices-TOTAL_FORMS': len(choices),
-            'choices-INITIAL_FORMS': 0,
-            'choices-MIN_NUM_FORMS': 2,
-            'choices-MAX_NUM_FORMS': 10,
+            "csrfmiddlewaretoken": self.csrf_token,
+            "title": title,
+            "description": f"Large scale poll: {title}",
+            "is_public": "on",
+            "start_date": time.strftime("%Y-%m-%dT%H:%M"),
+            "choices-TOTAL_FORMS": len(choices),
+            "choices-INITIAL_FORMS": 0,
+            "choices-MIN_NUM_FORMS": 2,
+            "choices-MAX_NUM_FORMS": 10,
         }
         for i, choice in enumerate(choices):
-            data[f'choices-{i}-choice_text'] = choice
+            data[f"choices-{i}-choice_text"] = choice
 
         try:
             response = self.session.post(url, data=data, timeout=10)
@@ -94,22 +98,19 @@ class MockUser:
     def vote(self, poll_url):
         try:
             response = self.session.get(poll_url, timeout=10)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            csrf_input = soup.find('input', {'name': 'csrfmiddlewaretoken'})
+            soup = BeautifulSoup(response.text, "html.parser")
+            csrf_input = soup.find("input", {"name": "csrfmiddlewaretoken"})
             if not csrf_input:
                 return False
-            self.csrf_token = csrf_input['value']
-            
-            choices = soup.find_all('input', {'name': 'choice'})
+            self.csrf_token = csrf_input["value"]
+
+            choices = soup.find_all("input", {"name": "choice"})
             if not choices:
                 return False
-            
-            selected_choice = random.choice(choices)['value']
-            vote_url = poll_url.rstrip('/') + "/vote/"
-            data = {
-                'csrfmiddlewaretoken': self.csrf_token,
-                'choice': selected_choice
-            }
+
+            selected_choice = random.choice(choices)["value"]
+            vote_url = poll_url.rstrip("/") + "/vote/"
+            data = {"csrfmiddlewaretoken": self.csrf_token, "choice": selected_choice}
             response = self.session.post(vote_url, data=data, timeout=10)
             if response.status_code == 200:
                 return True
@@ -118,8 +119,10 @@ class MockUser:
             pass
         return False
 
+
 def get_random_string(length=8):
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+    return "".join(random.choices(string.ascii_lowercase + string.digits, k=length))
+
 
 def setup_polls():
     print("Setting up 15 reference polls...")
@@ -136,7 +139,10 @@ def setup_polls():
         ("Programming Language", ["Python", "Go", "Rust", "JavaScript"]),
         ("Container Orchestrator", ["Kubernetes", "Nomad", "Docker Swarm", "ECS"]),
         ("CI/CD Platform", ["Actions", "GitLab CI", "Jenkins", "CircleCI"]),
-        ("Monitoring Stack", ["Prometheus/Grafana", "Datadog", "New Relic", "Dynatrace"]),
+        (
+            "Monitoring Stack",
+            ["Prometheus/Grafana", "Datadog", "New Relic", "Dynatrace"],
+        ),
         ("IaC Framework", ["Terraform", "Pulumi", "Ansible", "CloudFormation"]),
         ("Frontend Framework", ["React", "Vue", "Angular", "Svelte"]),
         ("Version Control", ["GitHub", "GitLab", "Bitbucket", "Azure DevOps"]),
@@ -144,7 +150,7 @@ def setup_polls():
         ("OS for Server", ["Ubuntu", "Debian", "CentOS/Rocky", "Alpine"]),
         ("Messaging Queue", ["RabbitMQ", "Kafka", "Redis Streams", "SQS"]),
         ("API Architecture", ["REST", "GraphQL", "gRPC", "WebSockets"]),
-        ("Security Scanner", ["ZAP", "Burp Suite", "Nessus", "Checkmarx"])
+        ("Security Scanner", ["ZAP", "Burp Suite", "Nessus", "Checkmarx"]),
     ]
 
     poll_urls = []
@@ -152,36 +158,41 @@ def setup_polls():
         url = admin.create_poll(title, choices)
         if url:
             poll_urls.append(url)
-    
+
     return poll_urls
+
 
 def run_enhanced_simulation():
     poll_urls = setup_polls()
     if len(poll_urls) < 15:
         print(f"Warning: Only {len(poll_urls)}/15 polls created. Proceeding anyway.")
-    
+
     if not poll_urls:
         print("No polls available. Exit.")
         return
 
-    print(f"Starting simulation with {len(poll_urls)} polls and continuous user creation.")
+    print(
+        f"Starting simulation with {len(poll_urls)} polls and continuous user creation."
+    )
     user_count = 0
     while True:
         try:
             ts = int(time.time())
             username = f"mass_user_{user_count}_{get_random_string(4)}"
             user = MockUser(username, "MassPass123!", f"{username}@sim.local")
-            
+
             if user.register() and user.login():
                 print(f"User {username} starting to vote in all polls...")
                 success_votes = 0
                 for url in poll_urls:
                     if user.vote(url):
                         success_votes += 1
-                    time.sleep(0.1) # Small delay to not overwhelm
-                print(f"User {username} finished. Success votes: {success_votes}/{len(poll_urls)}")
+                    time.sleep(0.1)  # Small delay to not overwhelm
+                print(
+                    f"User {username} finished. Success votes: {success_votes}/{len(poll_urls)}"
+                )
                 user_count += 1
-            
+
             # Short wait between users
             time.sleep(2)
         except KeyboardInterrupt:
@@ -190,6 +201,7 @@ def run_enhanced_simulation():
         except Exception as e:
             print(f"Unexpected error in simulation loop: {e}")
             time.sleep(5)
+
 
 if __name__ == "__main__":
     run_enhanced_simulation()

@@ -44,6 +44,12 @@ spec:
         - name: dashboard-volume
           mountPath: /var/lib/grafana/dashboards/django-dashboard.json
           subPath: django-dashboard.json
+        - name: pods-dashboard-volume
+          mountPath: /var/lib/grafana/dashboards/k8s-pods-dashboard.json
+          subPath: k8s-pods-dashboard.json
+        - name: minikube-dashboard-volume
+          mountPath: /var/lib/grafana/dashboards/minikube-dashboard.json
+          subPath: minikube-dashboard.json
       volumes:
       - name: datasource-volume
         configMap:
@@ -54,6 +60,12 @@ spec:
       - name: dashboard-volume
         configMap:
           name: grafana-dashboard-config
+      - name: pods-dashboard-volume
+        configMap:
+          name: grafana-pods-dashboard-config
+      - name: minikube-dashboard-volume
+        configMap:
+          name: grafana-minikube-dashboard-config
 ---
 apiVersion: v1
 kind: Service

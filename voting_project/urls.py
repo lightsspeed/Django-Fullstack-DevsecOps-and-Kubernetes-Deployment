@@ -14,31 +14,40 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from django.urls import include
 from django.http import HttpResponse
+
 
 def health_check(request):
     return HttpResponse("OK")
 
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('polls.urls')),
-    path('users/', include('users.urls')),
-    
+    path("admin/", admin.site.urls),
+    path("users/", include("users.urls")),
     # API endpoints
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
     # Prometheus metrics
-    path('', include('django_prometheus.urls')),
-    
+    path("", include("django_prometheus.urls")),
     # Health check
-    path('health/', health_check, name='health_check'),
+    path("health/", health_check, name="health_check"),
+    # Polls app (Put last because it matches slugs)
+    path("", include("polls.urls")),
 ]
 
 if settings.DEBUG:
